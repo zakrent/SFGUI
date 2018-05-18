@@ -7,18 +7,14 @@ set( SFGUI_REVISION_VERSION 2 )
 
 ### USER INPUT ###
 
-set( SFGUI_BUILD_SHARED_LIBS true CACHE BOOL "Build shared library." )
-set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
+set( SFGUI_BUILD_SHARED_LIBS false CACHE BOOL "Build shared library." )
+set( SFGUI_BUILD_EXAMPLES false CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
-set( SFML_STATIC_LIBRARIES false CACHE BOOL "Do you want to link SFML statically?" )
+set( SFML_STATIC_LIBRARIES true CACHE BOOL "Do you want to link SFML statically?" )
 
 # Tell CMake where to find additional find modules
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
-
-# Find packages.
-find_package( OpenGL REQUIRED )
-find_package( SFML 2.3 REQUIRED COMPONENTS graphics window system )
 
 # Find X11 for glX on Linux, checking for UNIX would match other UNIX systems as well
 if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
@@ -188,9 +184,11 @@ if( SFGUI_INCLUDE_FONT )
 	)
 endif()
 
+set(SFML_LIBRARIES sfml-network sfml-graphics sfml-window sfml-system sfml-audio)
+
 include_directories( "${INCLUDE_PATH}" )
 include_directories( "${SOURCE_PATH}" )
-include_directories( SYSTEM "${SFML_INCLUDE_DIR}" )
+include_directories( SYSTEM "${PROJECT_SOURCE_DIR}/deps/SFML/include" )
 include_directories( SYSTEM "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
 # Set the library output directory
@@ -285,12 +283,6 @@ if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL
 elseif( CMAKE_COMPILER_IS_GNUCXX )
 	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
-endif()
-
-### EXAMPLES ###
-
-if( SFGUI_BUILD_EXAMPLES )
-	add_subdirectory( "examples" )
 endif()
 
 ### DOCUMENTATION ###
